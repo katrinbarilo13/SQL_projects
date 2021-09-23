@@ -1,6 +1,7 @@
 USE mavenfuzzyfactory; 
 
 -- This mini project was designed to showcase business intelligence analysis based on a fictional dataset 
+-- This project focuses on more business realted situations and advanced SQL techniques
 -- Its based on e-commerce products and website analytics 
 
 
