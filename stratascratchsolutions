@@ -1,0 +1,40 @@
+-- These solutions come from questions provided by StrataScratch (website providing interview questions from FAANG companies)
+-- The questions asked are all from the 'Hard' section
+-- The syntax is PostgreSQL
+
+-- Q1 [Amazon]: Find the customer with the highest total order cost between 2019-02-01 to 2019-05-01. 
+-- If customer had more than one order on a certain day, sum the order costs on daily basis. Output their first name, total cost of their items, and the date.
+
+SELECT customers.first_name AS name, 
+SUM(orders.total_order_cost) AS order_cost,
+orders.order_date
+FROM customers
+LEFT JOIN orders
+    ON customers.id = orders.cust_id
+WHERE orders.order_date BETWEEN '2019-02-01' AND '2019-05-01'
+GROUP BY 1,3 
+ORDER BY 2 DESC
+limit 1;
+
+-- Q2 [Microsoft]: Find the total number of downloads for paying and non-paying users by date. 
+-- Include only records where non-paying customers have more downloads than paying customers. 
+-- The output should be sorted by earliest date first and contain 3 columns date, non-paying downloads, paying downloads.
+
+SELECT dates, non_paying_downloads, paying_downloads
+
+FROM (
+
+SELECT 
+ms_download_facts.date AS dates,
+SUM(CASE WHEN ms_acc_dimension.paying_customer = 'no' THEN ms_download_facts.downloads ELSE NULL END) AS non_paying_downloads,
+SUM(CASE WHEN ms_acc_dimension.paying_customer = 'yes' THEN ms_download_facts.downloads ELSE NULL END) AS paying_downloads
+FROM ms_acc_dimension
+LEFT JOIN ms_user_dimension
+    ON ms_acc_dimension.acc_id = ms_user_dimension.acc_id
+LEFT JOIN ms_download_facts
+    ON ms_user_dimension.user_id = ms_download_facts.user_id
+GROUP BY 1
+ORDER BY 1 ASC)
+AS downloads
+WHERE non_paying_downloads > paying_downloads
+GROUP BY 1,2,3; 
